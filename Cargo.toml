@@ -1,0 +1,15 @@
+[package]
+name = "horizon-schematica"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+description = "Litematica-inspired schematic reader, verifier, and build assistant for Horizon / Starling Client"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+fastnbt = "2.5"
+flate2 = "1.0"
+serde = { version = "1.0", features = ["derive"] }
+thiserror = "1.0"
