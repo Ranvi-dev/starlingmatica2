@@ -1,0 +1,41 @@
+name: Build and Test Horizon-Schematica
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Instalar Toolchain Rust (Host, ARM64 Android e Wasm)
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, wasm32-unknown-unknown
+
+      - name: Executar Testes Unitários
+        run: cargo test --verbose
+
+      - name: Compilar Módulo WebAssembly (Horizon Mod SDK)
+        run: cargo build --release --target wasm32-unknown-unknown
+
+      - name: Instalar cargo-ndk e Android NDK
+        run: |
+          cargo install cargo-ndk
+          echo "ANDROID_NDK_HOME=${ANDROID_NDK_LATEST_HOME}" >> $GITHUB_ENV
+
+      - name: Compilar Biblioteca Nativa Android ARM64
+        run: cargo ndk -t arm64-v8a -o ./jniLibs build --release
+
+      - name: Publicar Artefatos de Build
+        uses: actions/upload-artifact@v4
+        with:
+          name: horizon-schematica-builds
+          path: |
+            target/wasm32-unknown-unknown/release/horizon_schematica.wasm
+            jniLibs/arm64-v8a/libhorizon_schematica.so
+            
