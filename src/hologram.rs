@@ -10,7 +10,9 @@ pub struct HologramVertex {
 
 #[derive(Debug, Clone)]
 pub struct HologramConfig {
-    pub origin: [i32; 3],
+    pub origin_x: i32,
+    pub origin_y: i32,
+    pub origin_z: i32,
     pub rotation_steps: u8,
     pub active_layer: Option<usize>,
     pub opacity: f32,
@@ -20,7 +22,9 @@ pub struct HologramConfig {
 impl Default for HologramConfig {
     fn default() -> Self {
         Self {
-            origin:,
+            origin_x: 0,
+            origin_y: 0,
+            origin_z: 0,
             rotation_steps: 0,
             active_layer: Some(0),
             opacity: 0.45,
@@ -59,9 +63,9 @@ where
                 let expected = raw_block.rotated(config.rotation_steps);
                 let (rx, rz) = rotate_coords(x, z, grid.width, grid.length, config.rotation_steps);
 
-                let wx = config.origin[0] + rx as i32;
-                let wy = config.origin[1] + y as i32;
-                let wz = config.origin[2] + rz as i32;
+                let wx = config.origin_x + rx as i32;
+                let wy = config.origin_y + y as i32;
+                let wz = config.origin_z + rz as i32;
 
                 let actual = world_lookup(wx, wy, wz);
                 let status = evaluate_block(&expected, &actual);
@@ -103,5 +107,4 @@ fn push_cube_wireframe(out: &mut Vec<HologramVertex>, x: f32, y: f32, z: f32, co
         out.push(HologramVertex { position: p[a], color });
         out.push(HologramVertex { position: p[b], color });
     }
-                                 }
-
+}
